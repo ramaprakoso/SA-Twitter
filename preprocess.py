@@ -1,25 +1,26 @@
-import tweepy 
-import time 
-from tweepy import Stream 
-from tweepy.auth import OAuthHandler 
-from tweepy.streaming import StreamListener 
+import nltk
+from nltk.tokenize import word_tokenize
 
-ckey='dH7wGLT9ZQp7pA9QBKxq6hBXE'
-csecret='U0ZkvQ21dQw8zQ4VnvvOrK0DS5MDKB0gRDyYpyCp8w7FESXqOQ'
-atoken='3181521055-tfcxyBJwQ2nHYQIhfbRR0wBvSga2IHfJKlbzKC6'
-asecret='Qv6sYaSJ45xL6Tp1jvpSaT5YobH6rGhSVzkfE2r5svALB'
-
-class listener(StreamListener): 
-	def on_data(self,data): 
-			print data
-			simpanFile=open('tweet1.csv','a')
-			simpanFile.write(data)
-			simpanFile.write('\n')
-			simpanFile.close()
-			return True
-	def on_error(self,status): 
-		print status
-auth = OAuthHandler(ckey, csecret)
-auth.set_access_token(atoken, asecret)
-twitterStream = Stream(auth, listener())
-twitterStream.filter(track=["ahok"])
+def buka_file(filename): 
+	with open(filename,"r") as f:
+		data=f.read().split('\n')
+		return data
+def stopword(filename):
+	stop=[unicode(x.strip(),'utf-8') for x in open(filename,'r').read().split('\n')]
+	return stop
+def tokenize(data,stoped):
+	#memilih stopwords 
+	tampung=[]
+	token=[word_tokenize(i) for i in data]
+	for a in token : 
+		for kata in a: 
+			if kata not in stoped: 
+				tampung.append(kata)
+	return tampung
+def main(): 
+	data=buka_file('tweet1clean.csv')
+	stop=stopword('stopword.txt')
+	print tokenize(data,stop)
+	
+if __name__=='__main__': 
+	main()
